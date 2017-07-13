@@ -29,7 +29,7 @@ dependencies:
       - export ANDROID_HOME="${HOME}/android"
       - pushd "${ANDROID_HOME}/"
           && wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
-          && unzip sdk-tools-linux-3859397.zip
+          && unzip -o sdk-tools-linux-3859397.zip
           && popd
       # Install Android SDK, tools, and build tools API 26
       - echo "y" | "${ANDROID_HOME}/tools/bin/sdkmanager" "platforms;android-26" "tools" "build-tools;26.0.0"
