@@ -21,14 +21,17 @@ dependencies:
       - gcloud -q auth activate-service-account --key-file "${HOME}/service_account.json" || true
       - gcloud -q config set project "${GOOGLE_PROJECT_ID}"
       - gcloud -q components update app-engine-java
-      - if [ ! -d "${HOME}/android" ]; then mkdir -p "${HOME}/android" && \
-          pushd "${HOME}/android" && \
-          wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip && \
-          unzip sdk-tools-linux-3859397.zip && \
-          popd && \
-          # Install Android SDK, tools, and build tools API 26
-          echo "y" | tools/bin/sdkmanager "platforms;android-26" "tools" "build-tools;26.0.0"; fi
-      - export ANDROID_HOME="${HOME}/android"
+      - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe"
+          && sudo apt-get update
+          && sudo apt-get install -t trusty-backports shellcheck
+      #- if [ ! -d "${HOME}/android" ]; then mkdir -p "${HOME}/android" && \
+      #    pushd "${HOME}/android" && \
+      #    wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip && \
+      #    unzip sdk-tools-linux-3859397.zip && \
+      #    popd && \
+      #    # Install Android SDK, tools, and build tools API 26
+      #    echo "y" | tools/bin/sdkmanager "platforms;android-26" "tools" "build-tools;26.0.0"; fi
+      #- export ANDROID_HOME="${HOME}/android"
       - export GOOGLE_VERSION_ID="cirlce-${CIRCLE_BUILD_NUM}"
       - java -version
       - gradle --version
