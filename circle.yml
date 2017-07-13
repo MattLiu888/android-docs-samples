@@ -26,12 +26,11 @@ dependencies:
           && sudo apt-get update
           && sudo apt-get install -t trusty-backports shellcheck
       # Install Android SDK, tools, and build tools API 26
-      - echo y | android update sdk --no-ui --all --filter "platforms;android-26"
-      - echo y | android update sdk --no-ui --all --filter "build-tools;26.0.0"
-      - echo y | android update sdk --no-ui --all --filter "tools"
+      - echo y | android update sdk
+      - echo y | android update sdk --no-ui --all --filter "android-26"
       - export GOOGLE_VERSION_ID="cirlce-${CIRCLE_BUILD_NUM}"
       - java -version
 
 test:
   override:
-    - bash run_tests.sh
+    - bash ./run_tests.sh
