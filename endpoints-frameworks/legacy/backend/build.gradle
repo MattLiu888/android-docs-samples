@@ -46,16 +46,15 @@ dependencies {
     compile 'javax.servlet:servlet-api:2.5'
 }
 
-appengine { // App Engine Tasks configuration
+appengine { // Deprecated App Engine plugin Tasks configuration
     downloadSdk = true
     appcfg {
         oauth2 = true
+
+        // extraOptions is used for acceptance test and
+        // is not required.
         def application = findProperty("appengine.deploy.application")
-        println application
-
         def version = findProperty("appengine.deploy.version")
-        println version
-
         def serviceAccount = findProperty("appengine.deploy.serviceAccount")
 
         extraOptions = ["--application=" + application, "--version=" + version,
