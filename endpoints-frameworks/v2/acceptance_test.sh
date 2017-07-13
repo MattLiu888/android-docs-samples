@@ -23,13 +23,13 @@ sed -i'.bak' \
     app/src/main/java/com/example/migration/endpoints/app/MainActivity.java
 
 # Deploy backend
-gradle backend:appengineDeploy \
+./gradlew backend:appengineDeploy \
     -Pappengine.deploy.promote=false \
     -Pappengine.deploy.version="${GOOGLE_VERSION_ID}"
 
 # Generate apk from "app" module
-gradle app:assembleAndroidTest
-gradle app:assembleDebug
+./gradlew app:assembleAndroidTest
+./gradle app:assembleDebug
 
 # Run Tests on Firebase Test Lab
 gcloud firebase test android run \
