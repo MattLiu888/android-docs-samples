@@ -51,10 +51,10 @@ dependencies {
 appengine {  // App Engine tasks configuration
     deploy {   // deploy configuration
 
-        // The following is used for acceptance tests and 
+        // The following is used for acceptance tests and
         // is not required for a migration.
         version = findProperty("appengine.deploy.version")
-        def promoteProp = findProperty("appengine.deploy.promote"
+        def promoteProp = findProperty("appengine.deploy.promote")
         if (promoteProp != null) {
             promote = new Boolean(promoteProp)
         }
