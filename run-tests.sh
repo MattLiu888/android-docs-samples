@@ -56,18 +56,26 @@ changed_files_parent() {
   )
 }
 
-common_changed_dir="$(changed_files_parent)"
+# common_changed_dir="$(changed_files_parent)"
+# 
+# [ -z "${common_changed_dir}" ] || pushd "${common_travis_dir}"
+# 
+# gradle test
+# 
+# if [ -e "acceptance_test.sh" ]; then
+#   # Run acceptance test
+#   bash acceptance_test.sh
+# fi
+# 
+# [ -z "${common_changed_dir}" ] || popd
 
-[ -z "${common_changed_dir}" ] || pushd "${common_travis_dir}"
+pushd endpoints-frameworks/legacy/
+bash acceptance_test.sh
+popd
 
-gradle test
-
-if [ -e "acceptance_test.sh" ]; then
-  # Run acceptance test
-  bash acceptance_test.sh
-fi
-
-[ -z "${common_changed_dir}" ] || popd
+pushd endpoints-frameworks/v2/
+bash acceptance_test.sh
+popd
 
 # Check that all shell scripts in this repo (including this one) pass the
 # Shell Check linter.
