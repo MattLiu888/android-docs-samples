@@ -17,10 +17,12 @@ machine:
 
 dependencies:
   override:
+      - sudo apt-get update
       - echo "${KEYFILE}" > "${HOME}/service_account.json" 
       - gcloud -q auth activate-service-account --key-file "${HOME}/service_account.json" || true
       - gcloud -q config set project "${GOOGLE_PROJECT_ID}"
-      - gcloud -q components update app-engine-java
+      #- gcloud -q components update app-engine-java
+      - sudo apt-get install google-cloud-sdk-app-engine-java
       - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe"
           && sudo apt-get update
           && sudo apt-get install -t trusty-backports shellcheck
