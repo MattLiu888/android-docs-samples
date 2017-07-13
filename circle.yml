@@ -16,7 +16,7 @@ machine:
       version: openjdk8
 
 dependencies:
-  override:
+  pre:
       - sudo apt-get update
       - echo "${KEYFILE}" > "${HOME}/service_account.json" 
       - sudo /opt/google-cloud-sdk/bin/gcloud -q components update app-engine-java
