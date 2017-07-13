@@ -29,7 +29,7 @@ sed -i'.bak' \
 
 # Generate apk from "app" module
 ./gradlew app:assembleAndroidTest
-./gradle app:assembleDebug
+./gradlew app:assembleDebug
 
 # Run Tests on Firebase Test Lab
 gcloud firebase test android run \
