@@ -46,7 +46,7 @@ handle_error() {
 
 cleanup() {
   delete_app_version "${GOOGLE_VERSION_ID}" &
-  rm -r "${ERROR_OUTPUT_DIR:?}/"*
+  # rm -r "${ERROR_OUTPUT_DIR:?}/"*
 }
 
 # First, style-check the shell scripts
@@ -68,14 +68,14 @@ for path in $SCRIPT_LIST; do
   # If there's an error, clean up
 
   pushd "${dir}"
-	if [ -e "acceptance.sh" ]; then 
-  	/bin/bash ./acceptance.sh
+  if [ -e "acceptance.sh" ]; then
+    /bin/bash ./acceptance.sh
+    cleanup
   fi
 
-	./gradlew test
+  ./gradlew test
 
   # Clean up the app version
-  cleanup
   )
   # Clear the trap
   trap - ERR
