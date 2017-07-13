@@ -26,8 +26,10 @@ dependencies:
           && sudo apt-get update
           && sudo apt-get install -t trusty-backports shellcheck
       # Install Android SDK, tools, and build tools API 26
-      - echo y | android update sdk --no-ui --all --filter "android-26"
-      - echo y | android update sdk --no-ui --all --filter "build-tools-26.0.0"
+      #- echo y | android update sdk --no-ui --all --filter "android-26"
+      #- echo y | android update sdk --no-ui --all --filter "build-tools-26.0.0"
+      - echo y | android update sdk --no-ui --all --filter "tool,extra-android-m2repository,extra-android-support,extra-google-google_play_services,extra-google-m2repository"
+      - echo "y" | "${ANDROID_HOME}/tools/bin/sdkmanager" "platforms;android-26" "tools" "build-tools;26.0.0"
       - export GOOGLE_VERSION_ID="cirlce-${CIRCLE_BUILD_NUM}"
       - java -version
 
