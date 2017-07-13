@@ -40,7 +40,7 @@ limitations under the License.
         -->
         <option name="WAR_DIR" value="$MODULE_DIR$/build/exploded-backend" />
         <option name="WEB_APP_DIR" value="$MODULE_DIR$/src/main/webapp" />
-        <option name="APPENGINE_SDKROOT" value="$USER_HOME$/.gradle/appengine-sdk/appengine-java-sdk-1.9.42" />
+        <option name="APPENGINE_SDKROOT" value="$USER_HOME$/.gradle/appengine-sdk/appengine-java-sdk-1.9.54" />
       </configuration>
     </facet>
     <!-- [END backend_facet] -->
