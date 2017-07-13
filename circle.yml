@@ -32,4 +32,4 @@ dependencies:
 
 test:
   override:
-    - bash ./run_tests.sh
+    - bash run-tests.sh
