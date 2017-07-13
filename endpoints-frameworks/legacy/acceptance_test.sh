@@ -23,9 +23,10 @@ sed -i'.bak' \
     app/src/main/java/com/example/migration/endpoints/app/MainActivity.java
 
 # Deploy backend
-gradle backend:appengineDeploy \
-    -Pappengine.deploy.promote=false \
-    -Pappengine.deploy.version="${GOOGLE_VERSION_ID}"
+gradle backend:appengineUpdate \
+    -Pappengine.deploy.application=${GOOGLE_PROJECT_ID} \
+    -Pappengine.deploy.version="${GOOGLE_VERSION_ID}" \
+    -Pappengine.deploy.serviceAccount="${GOOGLE_APPLICATION_CREDENTIALS}"
 
 # Generate apk from "app" module
 gradle app:assembleAndroidTest
@@ -38,6 +39,4 @@ gcloud firebase test android run \
    --test app/build/outputs/apk/app-debug-androidTest.apk \
    --device model=sailfish,version=25,locale=en,orientation=portrait  \
    --timeout 5m
-
-
 

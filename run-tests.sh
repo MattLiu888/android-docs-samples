@@ -21,7 +21,7 @@ shopt -s globstar
 
 # Finds the closest parent dir that encompasses all changed files, and has a
 # build.gradle
-travis_changed_files_parent() {
+changed_files_parent() {
   # If we're not in a PR, forget it
   [ -z "${CI_PULL_REQUEST}" ] && return 0
 
@@ -46,21 +46,26 @@ travis_changed_files_parent() {
       #    next pass.
       sed -e 'N;s/^\(.*\).*\n\1.*$/\1\n\1/;D')"
 
-    while [ ! -z "$prefix" ] && [ ! -r "$prefix/build.gradle" ] && [ "${prefix%/*}" != "$prefix" ]; do
+    while [ ! -z "$prefix" ] && [ ! -r "$prefix/build.gradle" ] && [ ! -r "$prefix/acceptance_test.sh" ] && [ "${prefix%/*}" != "$prefix" ]; do
       prefix="${prefix%/*}"
     done
 
-    [ -r "$prefix/build.gradle" ] || return 0
+    [ -r "$prefix/build.gradle" ] || [ -r "$prefix/acceptance_test.sh" ] || return 0
 
     echo "$prefix"
   )
 }
 
-common_changed_dir="$(travis_changed_files_parent)"
+common_changed_dir="$(changed_files_parent)"
 
 [ -z "${common_changed_dir}" ] || pushd "${common_travis_dir}"
 
 gradle test
+
+if [ -e "acceptance_test.sh" ]; then
+  # Run acceptance test
+  bash acceptance_test.sh
+fi
 
 [ -z "${common_changed_dir}" ] || popd
 
