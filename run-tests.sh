@@ -13,71 +13,72 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -ex
+set -xe
+#shopt -s globstar
+# We spin up some subprocesses. Don't kill them on hangup
+trap '' HUP
 
-# Set pipefail so that `egrep` does not eat the exit code.
-set -o pipefail
-shopt -s globstar
+# Temporary directory to store any output to display on error
+export ERROR_OUTPUT_DIR
+ERROR_OUTPUT_DIR="$(mktemp -d)"
+trap 'rm -r "${ERROR_OUTPUT_DIR}"' EXIT
 
-# Finds the closest parent dir that encompasses all changed files, and has a
-# build.gradle
-changed_files_parent() {
-  # If we're not in a PR, forget it
-  [ -z "${CI_PULL_REQUEST}" ] && return 0
-
-  (
-    set +e
-
-    changed="$(git diff --name-only "${CIRCLE_SHA1}" master)"
-    if [ $? -ne 0 ]; then
-      # Fall back to git head
-      changed="$(git diff --name-only "$(git rev-parse HEAD)" "${CIRCLE_BRANCH}")"
-      [ $? -ne 0 ] && return 0  # Give up. Just run everything.
-    fi
-
-    # Find the common prefix
-    prefix="$(echo "$changed" | \
-      # N: Do this for a pair of lines
-      # s: capture the beginning of a line, that's followed by a new line
-      #    starting with that capture group. IOW - two lines that start with the
-      #    same zero-or-more characters. Replace it with just the capture group
-      #    (ie the common prefix).
-      # D: Delete the first line of the pair, leaving the second line for the
-      #    next pass.
-      sed -e 'N;s/^\(.*\).*\n\1.*$/\1\n\1/;D')"
-
-    while [ ! -z "$prefix" ] && [ ! -r "$prefix/build.gradle" ] && [ ! -r "$prefix/acceptance_test.sh" ] && [ "${prefix%/*}" != "$prefix" ]; do
-      prefix="${prefix%/*}"
-    done
-
-    [ -r "$prefix/build.gradle" ] || [ -r "$prefix/acceptance_test.sh" ] || return 0
-
-    echo "$prefix"
-  )
+delete_app_version() {
+  yes | gcloud --project="${GOOGLE_PROJECT_ID}" \
+    app versions delete "${1}"
 }
 
-# common_changed_dir="$(changed_files_parent)"
-# 
-# [ -z "${common_changed_dir}" ] || pushd "${common_travis_dir}"
-# 
-# gradle test
-# 
-# if [ -e "acceptance_test.sh" ]; then
-#   # Run acceptance test
-#   bash acceptance_test.sh
-# fi
-# 
-# [ -z "${common_changed_dir}" ] || popd
+handle_error() {
+  errcode=$? # Remember the error code so we can exit with it after cleanup
 
-pushd endpoints-frameworks/legacy/
-bash acceptance_test.sh
-popd
+  # Clean up remote app version
+  delete_app_version "${1}" &
 
-pushd endpoints-frameworks/v2/
-bash acceptance_test.sh
-popd
+  # Display any errors
+  if [ -n "$(find "${2}" -mindepth 1 -print -quit)" ]; then
+    cat "${2:?}"/* 1>&2
+  fi
 
-# Check that all shell scripts in this repo (including this one) pass the
-# Shell Check linter.
-shellcheck ./**/*.sh
+  wait
 
+  exit ${errcode}
+}
+
+cleanup() {
+  delete_app_version "${GOOGLE_VERSION_ID}" &
+  rm -r "${ERROR_OUTPUT_DIR:?}/"*
+}
+
+# First, style-check the shell scripts
+# shellcheck ./**/*.sh
+
+# Find/run all project level build.gradle and if there's an acceptance.sh run it.
+export SCRIPT_LIST
+SCRIPT_LIST="$(find . -maxdepth 3 -name build.gradle -type f)"
+for path in $SCRIPT_LIST; do
+  dir="${path%/build.gradle}"
+  # Need different app versions because flex can't deploy over an existing
+  # version. Use just the first letter of each subdir in version name
+  export GOOGLE_VERSION_ID
+  # shellcheck disable=SC2001
+  GOOGLE_VERSION_ID="circle-$(echo "${dir#./}" | sed 's#\([a-z]\)[^/]*/#\1-#g')"
+
+  trap 'handle_error "${GOOGLE_VERSION_ID}" "${ERROR_OUTPUT_DIR}"' ERR
+  (
+  # If there's an error, clean up
+
+  pushd "${dir}"
+	if [ -e "acceptance.sh" ]; then 
+  	/bin/bash ./acceptance.sh
+  fi
+
+	./gradlew test
+
+  # Clean up the app version
+  cleanup
+  )
+  # Clear the trap
+  trap - ERR
+done
+
+wait
