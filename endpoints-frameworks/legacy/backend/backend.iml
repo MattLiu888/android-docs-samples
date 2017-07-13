@@ -27,6 +27,7 @@ limitations under the License.
         <option name="BUILDABLE" value="true" />
       </configuration>
     </facet>
+    <!-- [START backend_facet] -->
     <facet type="app-engine-gradle" name="App Engine Gradle">
       <configuration>
         <option name="HTTP_ADDRESS" value="localhost" />
@@ -36,6 +37,7 @@ limitations under the License.
         <option name="APPENGINE_SDKROOT" value="$USER_HOME$/.gradle/appengine-sdk/appengine-java-sdk-1.9.54" />
       </configuration>
     </facet>
+    <!-- [END backend_facet] -->
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/classes/main" />
