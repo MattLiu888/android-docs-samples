@@ -37,6 +37,16 @@ apply plugin: 'com.android.application'
 // Apply the new Endpoints Framework client plugin
 apply plugin: 'com.google.cloud.tools.endpoints-framework-client'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        // Add the new Endpoints Framework plugin dependencies
+        classpath 'com.google.cloud.tools:endpoints-framework-gradle-plugin:1.0.0'
+    }
+}
+
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.0'
@@ -54,16 +64,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-}
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        // Add the new Endpoints Framework plugin dependencies
-        classpath 'com.google.cloud.tools:endpoints-framework-gradle-plugin:1.0.0'
     }
 }
 
